@@ -28,10 +28,10 @@ Day 2: Backend Setup
 2.Installed dependencies: express, cors, dotenv, multer, nodemon
 3.Set up file upload API using Multer
 4.Created basic routes (GET /, POST /upload)
-5.Server successfully running locally on: http://localhost:5000
+5.Server successfully running locally on Port 5000
 6.Tested APIs using Thunder Client (GET and POST working fine)
 
 Day 2 Outcome:
 Backend server successfully set up using Node.js and Express.js
-Server running locally on http://localhost:5000
+Server running locally on Port 5000
 GET and POST APIs working properly
