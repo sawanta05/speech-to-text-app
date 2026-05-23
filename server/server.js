@@ -4,8 +4,14 @@ require("dotenv").config();
 
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const OpenAI = require("openai");
 
 const supabase = require("./config/supabase");
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const app = express();
 
@@ -52,14 +58,27 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       });
     }
 
-    // Save file info in Supabase
+    // =======================
+    // WHISPER API TRANSCRIPTION
+    // =======================
+    const transcriptionResponse =
+      await openai.audio.transcriptions.create({
+        file: fs.createReadStream(req.file.path),
+        model: "whisper-1",
+      });
+
+    const transcript = transcriptionResponse.text;
+
+    // =======================
+    // SAVE DATA IN SUPABASE
+    // =======================
     const { data, error } = await supabase
       .from("audio_files")
       .insert([
         {
           filename: req.file.filename,
           file_url: req.file.path,
-          transcription: "",
+          transcription: transcript,
         },
       ]);
 
@@ -70,15 +89,18 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       });
     }
 
-    // Success response
+    // =======================
+    // SUCCESS RESPONSE
+    // =======================
     res.json({
-      message: "File uploaded and saved to Supabase 🚀",
+      message: "File uploaded and transcribed successfully 🚀",
+      transcript,
       data,
     });
 
   } catch (error) {
     res.status(500).json({
-      error: "Upload failed",
+      error: error.message,
     });
   }
 });
