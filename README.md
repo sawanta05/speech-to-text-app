@@ -35,3 +35,17 @@ Day 2 Outcome:
 Backend server successfully set up using Node.js and Express.js
 Server running locally on Port 5000
 GET and POST APIs working properly
+
+## Day 3: Database Setup (Supabase)
+
+### Completed Tasks
+- Created Supabase project
+- Installed Supabase SDK
+- Connected Express backend with Supabase
+- Created database table for storing audio files
+- Configured environment variables
+- Implemented API to save uploaded file data into Supabase
+- Successfully tested file upload and database insertion
+
+### Outcome
+Backend is now connected with Supabase database and uploaded audio file details are being stored successfully.
