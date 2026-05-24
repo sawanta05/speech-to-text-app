@@ -1,11 +1,14 @@
-function App() {
+export default function App() {
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-blue-600">
-        Speech To Text App
-      </h1>
+    <div style={{
+      height: "100vh",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      fontSize: "24px",
+      fontFamily: "Arial"
+    }}>
+      🎤 Speech to Text App is running!
     </div>
   )
 }
-
-export default App
