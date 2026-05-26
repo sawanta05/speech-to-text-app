@@ -3,7 +3,6 @@ const cors = require("cors");
 require("dotenv").config();
 
 const multer = require("multer");
-const path = require("path");
 const fs = require("fs");
 const OpenAI = require("openai");
 
@@ -41,6 +40,7 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
   },
+
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname);
   },
@@ -53,6 +53,7 @@ const upload = multer({ storage });
 // =======================
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
+    // check file
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -63,27 +64,48 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     // =======================
     // WHISPER TRANSCRIPTION
     // =======================
-    const transcriptionResponse = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(req.file.path),
-      model: "whisper-1",
-    });
+    let transcript = "";
 
-    const transcript = transcriptionResponse.text;
+    try {
+      const transcriptionResponse =
+        await openai.audio.transcriptions.create({
+          file: fs.createReadStream(req.file.path),
+          model: "whisper-1",
+        });
+
+      transcript = transcriptionResponse.text;
+    } catch (openaiError) {
+      console.error("OpenAI Error:", openaiError.status, openaiError.message);
+
+      // 👉 HANDLE QUOTA ERROR (429)
+      if (openaiError.status === 429) {
+        return res.status(429).json({
+          success: false,
+          error:
+            "OpenAI quota exceeded. Please check your billing or try again later.",
+        });
+      }
+
+      return res.status(500).json({
+        success: false,
+        error: "Transcription failed",
+      });
+    }
 
     // =======================
     // SAVE TO SUPABASE
     // =======================
     const { data, error } = await supabase
-      .from("audio_files")
+      .from("transcriptions")
       .insert([
         {
-          filename: req.file.filename,
-          file_url: req.file.path,
+          file_name: req.file.filename,
           transcription: transcript,
         },
       ])
-      .select(); // 👈 important to return inserted row
+      .select();
 
+    // if supabase error
     if (error) {
       return res.status(500).json({
         success: false,
@@ -92,7 +114,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     // =======================
-    // RESPONSE TO FRONTEND
+    // SUCCESS RESPONSE
     // =======================
     res.json({
       success: true,
@@ -103,6 +125,38 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
   } catch (error) {
     console.error("Server Error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// =======================
+// GET ALL TRANSCRIPTIONS
+// =======================
+app.get("/transcriptions", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("transcriptions")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    res.json({
+      success: true,
+      data,
+    });
+
+  } catch (error) {
+    console.error("Fetch Error:", error.message);
 
     res.status(500).json({
       success: false,
