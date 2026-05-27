@@ -3,19 +3,10 @@ const cors = require("cors");
 require("dotenv").config();
 
 const multer = require("multer");
-const fs = require("fs");
-const OpenAI = require("openai");
 
 const supabase = require("./config/supabase");
 
 const app = express();
-
-// =======================
-// OPENAI SETUP
-// =======================
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 // =======================
 // MIDDLEWARE
@@ -53,6 +44,7 @@ const upload = multer({ storage });
 // =======================
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
+
     // check file
     if (!req.file) {
       return res.status(400).json({
@@ -62,35 +54,10 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     }
 
     // =======================
-    // WHISPER TRANSCRIPTION
+    // MOCK TRANSCRIPTION
     // =======================
-    let transcript = "";
-
-    try {
-      const transcriptionResponse =
-        await openai.audio.transcriptions.create({
-          file: fs.createReadStream(req.file.path),
-          model: "whisper-1",
-        });
-
-      transcript = transcriptionResponse.text;
-    } catch (openaiError) {
-      console.error("OpenAI Error:", openaiError.status, openaiError.message);
-
-      // 👉 HANDLE QUOTA ERROR (429)
-      if (openaiError.status === 429) {
-        return res.status(429).json({
-          success: false,
-          error:
-            "OpenAI quota exceeded. Please check your billing or try again later.",
-        });
-      }
-
-      return res.status(500).json({
-        success: false,
-        error: "Transcription failed",
-      });
-    }
+    const transcript =
+      "This is a mock transcription because OpenAI quota is exceeded.";
 
     // =======================
     // SAVE TO SUPABASE
@@ -124,6 +91,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
     });
 
   } catch (error) {
+
     console.error("Server Error:", error.message);
 
     res.status(500).json({
@@ -138,6 +106,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 // =======================
 app.get("/transcriptions", async (req, res) => {
   try {
+
     const { data, error } = await supabase
       .from("transcriptions")
       .select("*")
@@ -156,6 +125,7 @@ app.get("/transcriptions", async (req, res) => {
     });
 
   } catch (error) {
+
     console.error("Fetch Error:", error.message);
 
     res.status(500).json({
