@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const multer = require("multer");
+const path = require("path");
 
 const supabase = require("./config/supabase");
 
@@ -33,11 +34,36 @@ const storage = multer.diskStorage({
   },
 
   filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage });
+// allowed audio types
+const allowedTypes = [
+  "audio/mpeg",
+  "audio/mp3",
+  "audio/wav",
+  "audio/x-wav",
+  "audio/webm",
+  "audio/mp4",
+];
+
+// multer upload config
+const upload = multer({
+  storage,
+
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+
+  fileFilter: (req, file, cb) => {
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Upload audio only."));
+    }
+  },
+});
 
 // =======================
 // UPLOAD + TRANSCRIBE ROUTE
@@ -45,11 +71,13 @@ const upload = multer({ storage });
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
 
-    // check file
+    // =======================
+    // CHECK FILE
+    // =======================
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "No file uploaded",
+        error: "No audio file uploaded",
       });
     }
 
@@ -72,7 +100,9 @@ app.post("/upload", upload.single("file"), async (req, res) => {
       ])
       .select();
 
-    // if supabase error
+    // =======================
+    // SUPABASE ERROR
+    // =======================
     if (error) {
       return res.status(500).json({
         success: false,
@@ -92,11 +122,11 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
   } catch (error) {
 
-    console.error("Server Error:", error.message);
+    console.error("Server Error:", error);
 
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: "Transcription failed",
     });
   }
 });
@@ -112,6 +142,9 @@ app.get("/transcriptions", async (req, res) => {
       .select("*")
       .order("created_at", { ascending: false });
 
+    // =======================
+    // SUPABASE ERROR
+    // =======================
     if (error) {
       return res.status(500).json({
         success: false,
@@ -119,6 +152,9 @@ app.get("/transcriptions", async (req, res) => {
       });
     }
 
+    // =======================
+    // SUCCESS RESPONSE
+    // =======================
     res.json({
       success: true,
       data,
@@ -126,13 +162,43 @@ app.get("/transcriptions", async (req, res) => {
 
   } catch (error) {
 
-    console.error("Fetch Error:", error.message);
+    console.error("Fetch Error:", error);
 
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: "Failed to fetch transcriptions",
     });
   }
+});
+
+// =======================
+// GLOBAL ERROR HANDLER
+// =======================
+app.use((err, req, res, next) => {
+
+  console.error("Global Error:", err);
+
+  // multer errors
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+  // invalid file type
+  if (err.message === "Invalid file type. Upload audio only.") {
+    return res.status(400).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
+  // generic error
+  res.status(500).json({
+    success: false,
+    error: err.message || "Something went wrong",
+  });
 });
 
 // =======================
