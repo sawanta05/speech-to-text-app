@@ -145,4 +145,4 @@ node server.js
 
 # 👨‍💻 Author
 
-Arya Sawant
+Arya Anant Sawant
