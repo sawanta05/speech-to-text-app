@@ -55,7 +55,7 @@ function Dashboard({ user }) {
     try {
       setLoading(true);
 
-      const res = await fetch("https://speech-to-text-app-oea9.onrender.com", {
+      const res = await fetch("https://speech-to-text-app-oea9.onrender.com/upload", {
         method: "POST",
         body: formData,
       });
