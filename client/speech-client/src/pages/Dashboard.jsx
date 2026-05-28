@@ -13,7 +13,7 @@ function Dashboard({ user }) {
   const fetchHistory = async () => {
     try {
       const response = await fetch(
-        `http://localhost:5000/transcriptions/${user.id}`
+        `https://speech-to-text-app-oea9.onrender.com/transcriptions/${user.id}`
       );
 
       const data = await response.json();
@@ -52,7 +52,7 @@ function Dashboard({ user }) {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/upload", {
+      const res = await fetch("https://speech-to-text-app-oea9.onrender.com", {
         method: "POST",
         body: formData,
       });
