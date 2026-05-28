@@ -1,51 +1,148 @@
-Project Title
+# 🎤 Speech To Text App
 
-Speech-to-Text App
+## 📌 Project Overview
 
-Day 1: Git Setup & Project Initialization
+Speech To Text App is a full-stack web application that allows users to upload audio files and convert speech into text. The application also supports user authentication and stores transcription history for each logged-in user.
 
-1.Initialized a new Git repository for version control
-2.Created project folder structure
-3.Set up initial project files
-4.Connected local project to GitHub repository
-5.Performed initial commit and push to GitHub
+The project was built using React.js for the frontend, Node.js and Express.js for the backend, and Supabase for authentication and database management. The frontend is deployed on Vercel and the backend is deployed on Render.
 
-Git Commands Used :
-git init
-git add .
-git commit -m "Initial commit - Day 1 setup"
-git branch -M main
-git remote add origin <repo-url>
-git push origin main
+---
 
-Outcome:
-Project successfully uploaded to GitHub
-Basic version control setup completed
+# 🚀 Features
 
-Day 2: Backend Setup
+* User Signup & Login Authentication
+* Audio File Upload
+* Speech-to-Text Transcription
+* Transcription History
+* Responsive Modern UI
+* Cloud Deployment
 
-1.Created Express server using Node.js
-2.Installed dependencies: express, cors, dotenv, multer, nodemon
-3.Set up file upload API using Multer
-4.Created basic routes (GET /, POST /upload)
-5.Server successfully running locally on Port 5000
-6.Tested APIs using Thunder Client (GET and POST working fine)
+---
 
-Day 2 Outcome:
-Backend server successfully set up using Node.js and Express.js
-Server running locally on Port 5000
-GET and POST APIs working properly
+# 🛠️ Tech Stack
 
-## Day 3: Database Setup (Supabase)
+## Frontend
 
-### Completed Tasks
-- Created Supabase project
-- Installed Supabase SDK
-- Connected Express backend with Supabase
-- Created database table for storing audio files
-- Configured environment variables
-- Implemented API to save uploaded file data into Supabase
-- Successfully tested file upload and database insertion
+* React.js
+* Tailwind CSS
+* Vite
 
-### Outcome
-Backend is now connected with Supabase database and uploaded audio file details are being stored successfully.
+## Backend
+
+* Node.js
+* Express.js
+* Multer
+
+## Database & Authentication
+
+* Supabase
+
+## Deployment
+
+* Vercel (Frontend)
+* Render (Backend)
+
+---
+
+# 📅 Project Development Timeline
+
+## Day 1
+
+* Created project structure
+* Initialized React frontend and Express backend
+
+## Day 2
+
+* Built basic frontend UI
+* Connected frontend and backend
+
+## Day 3
+
+* Created API routes in Express.js
+* Tested server communication
+
+## Day 4
+
+* Implemented audio upload using Multer
+* Stored uploaded files in uploads folder
+
+## Day 5
+
+* Improved frontend design using Tailwind CSS
+* Added responsive layout
+
+## Day 6
+
+* Integrated speech-to-text functionality
+* Displayed transcription results
+
+## Day 7
+
+* Connected Supabase database
+* Stored transcription history
+
+## Day 8
+
+* Enhanced UI with gradients, cards, and better styling
+
+## Day 9
+
+* Added error handling and validations
+
+## Day 10
+
+* Implemented user authentication using Supabase
+* Added Signup, Login, and Logout
+
+## Day 11
+
+* Deployed backend on Render
+* Connected backend with Supabase
+
+## Day 12
+
+* Deployed frontend on Vercel
+* Connected frontend with deployed backend
+
+## Day 13
+
+* Performed testing and debugging
+* Fixed deployment and API issues
+
+## Day 14
+
+* Added documentation and cleaned project structure
+* Prepared project for final submission
+
+---
+
+# ⚙️ Local Setup
+
+## Frontend
+
+```bash id="rsetup1"
+cd client/speech-client
+npm install
+npm run dev
+```
+
+## Backend
+
+```bash id="rsetup2"
+cd server
+npm install
+node server.js
+```
+
+---
+
+# 🌐 Deployment Links
+
+* Frontend: Vercel
+* Backend: Render
+
+---
+
+# 👨‍💻 Author
+
+Arya Sawant
