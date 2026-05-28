@@ -12,10 +12,13 @@ function Dashboard({ user }) {
   // =========================
   const fetchHistory = async () => {
     try {
-      const response = await fetch(
-        `https://speech-to-text-app-oea9.onrender.com/transcriptions/${user.id}`
-      );
-
+      const res = await fetch(
+  "https://speech-to-text-app-oea9.onrender.com/upload",
+  {
+    method: "POST",
+    body: formData,
+  }
+);
       const data = await response.json();
 
       if (data.success) {
